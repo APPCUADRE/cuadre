@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cuadre S.A.S. - Tu caja, siempre clara</title>
+  
+  <!-- LIBRERÍA CHART.JS PARA GRÁFICOS DE BARRAS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary-green: #007a53;
+      --primary-green-hover: #005f40;
+      --accent-blue: #0d6efd;
+      --danger-red: #dc3545;
+      --warning-yellow: #ffc107;
+      --purple-cierre: #6f42c1;
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+      --text-main: #212529;
+      --text-muted: #6c757d;
+      --border-color: #e9ecef;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(0, 122, 83, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 122, 83, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 122, 83, 0); }
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-top: 8px;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .brand-logo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .check-icon {
+      width: 44px;
+      height: 44px;
+      background-color: var(--primary-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 122, 83, 0.25);
+      position: relative;
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    .check-icon::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background-color: #e65100;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.03);
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    h2, h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #1a1a1a;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-color);
+      font-size: 15px;
+      background-color: #fdfdfd;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 4px rgba(0, 122, 83, 0.15);
+      background-color: #ffffff;
+    }
+
+    .health-badge {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .health-good { background-color: #e8f5e9; color: var(--primary-green); border: 1px solid #c8e6c9; }
+    .health-warning { background-color: #fff8e1; color: #b78103; border: 1px solid #ffe082; }
+    .health-bad { background-color: #ffebee; color: var(--danger-red); border: 1px solid #ffcdd2; }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:active { transform: scale(0.96); }
+
+    .btn-primary { background-color: var(--primary-green); color: white; }
+    .btn-primary:hover { background-color: var(--primary-green-hover); }
+
+    .btn-secondary { background-color: var(--accent-blue); color: white; margin-top: 10px; }
+
+    .btn-cierre {
+      background-color: var(--purple-cierre);
+      color: white;
+      margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(111, 66, 193, 0.25);
+    }
+    .btn-cierre:hover { background-color: #59339d; }
+
+    .btn-nuevo-dia {
+      background-color: #20c997;
+      color: white;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(32, 201, 151, 0.25);
+    }
+
+    .btn-toggle-chart {
+      background-color: #f0f4f8;
+      color: var(--accent-blue);
+      border: 1px solid #d0e1f9;
+      margin-top: 10px;
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .btn-danger { background-color: #fff0f1; color: var(--danger-red); border: 1px solid #ffe0e3; margin-top: 10px; }
+
+    .btn-excel {
+      background-color: #e8f5e9;
+      color: var(--primary-green);
+      padding: 8px 14px;
+      font-size: 12px;
+      width: auto;
+      border-radius: 8px;
+      border: 1px solid #c8e6c9;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      padding: 14px 10px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .metric-card span { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .metric-card h2 { margin: 6px 0 0 0; font-size: 15px; font-weight: 800; }
+
+    .text-ingresos { color: var(--primary-green); }
+    .text-gastos { color: var(--danger-red); }
+    .text-saldo { color: var(--accent-blue); }
+
+    .header-historial { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .header-historial h3 { margin: 0; }
+
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 8px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-color); }
+    th { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+
+    .badge-ingreso { color: var(--primary-green); font-weight: 700; }
+    .badge-gasto { color: var(--danger-red); font-weight: 700; }
+
+    .btn-delete { background: none; border: none; color: #aaa; cursor: pointer; padding: 4px; width: auto; font-size: 15px; }
+    .btn-delete:hover { color: var(--danger-red); }
+
+    .chart-container { position: relative; height: 220px; width: 100%; }
+
+    /* ESTILOS DE LA VENTANA DE HISTORIAL DE DÍAS Y PRODUCTO ESTRELLA */
+    .cierre-box {
+      background-color: #f3e5f5;
+      border: 1.5px solid #e1bee7;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .cierre-val { font-size: 22px; font-weight: 800; color: var(--purple-cierre); margin: 4px 0; }
+    .cierre-desc { font-size: 13px; color: #4a148c; line-height: 1.4; }
+
+    .top-product-card {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .top-product-title { font-size: 12px; font-weight: 700; color: #1565c0; text-transform: uppercase; }
+    .top-product-name { font-size: 18px; font-weight: 800; color: #0d47a1; margin: 4px 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="brand-header">
+      <div class="brand-logo-badge">
+        <div class="check-icon">✓</div>
+        <h1 class="brand-title">Cuadre</h1>
+      </div>
+      <div class="brand-tagline">Tu caja, siempre clara</div>
+    </div>
+
+    <!-- MÓDULO 1: AUTENTICACIÓN -->
+    <div id="auth-section" class="card">
+      <h2>Iniciar Sesión</h2>
+      <label>Correo electrónico</label>
+      <input type="email" id="email" placeholder="ejemplo@correo.com">
+      
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••">
+      
+      <button id="btn-login" class="btn-primary">Iniciar Sesión</button>
+      <button id="btn-register" class="btn-secondary">Registrarse</button>
+    </div>
+
+    <!-- MÓDULO 2: PANEL CONTABLE -->
+    <div id="app-section" style="display: none;">
+      
+      <!-- PRODUCTO ESTRELLA ANALÍTICA -->
+      <div id="top-product-box" class="top-product-card" style="display: none;">
+        <div class="top-product-title">⭐ Producto / Servicio Más Vendido</div>
+        <div id="top-product-name" class="top-product-name">-</div>
+        <div id="top-product-count" style="font-size: 12px; color: #1e88e5;">0 ventas acumuladas</div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="metric-card">
+          <span>Ingresos Hoy</span>
+          <h2 id="total-ingresos" class="text-ingresos">$0</h2>
+        </div>
+        <div class="metric-card">
+          <span>Gastos Hoy</span>
+          <h2 id="total-gastos" class="text-gastos">$0</h2>
+        </div>
+        <div class="metric-card">
+          <span>Saldo Hoy</span>
+          <h2 id="saldo-neto" class="text-saldo">$0</h2>
+        </div>
+      </div>
+
+      <div id="health-status" class="health-badge health-good">
+        🟢 Diagnóstico: Evaluación de caja en proceso...
+      </div>
+
+      <button id="btn-cierre-caja" class="btn-cierre">🔒 Generar Cierre de Caja y Rentabilidad</button>
+
+      <div id="cierre-card" class="card cierre-box" style="display: none;">
+        <h3 style="color: #4a148c; margin-bottom: 8px;">📊 Informe de Cierre Diario</h3>
+        <div>Margen Neto de Rentabilidad:</div>
+        <div id="cierre-rentabilidad" class="cierre-val">0%</div>
+        <p id="cierre-diagnostico" class="cierre-desc"></p>
+        
+        <button id="btn-nuevo-dia" class="btn-nuevo-dia">🌅 Guardar Día e Iniciar Nueva Jornada</button>
+      </div>
+
+      <!-- FORMULARIO DE REGISTRO -->
+      <div class="card" style="margin-top: 16px;">
+        <h3>Registrar Movimiento</h3>
+        
+        <label>Tipo de Transacción</label>
+        <select id="tipo">
+          <option value="INGRESO">Ingreso / Venta</option>
+          <option value="GASTO">Gasto / Compra</option>
+        </select>
+
+        <label>Concepto (Producto / Servicio / Compra)</label>
+        <input type="text" id="concepto" placeholder="Ej. Venta de mercancía o Arriendo">
+
+        <label>Monto ($ COP)</label>
+        <input type="number" id="monto" placeholder="Ej. 150000">
+
+        <label>Tercero (Cliente / Proveedor)</label>
+        <input type="text" id="tercero" placeholder="Ej. Distribuidora del Aburrá">
+
+        <button id="btn-guardar" class="btn-primary">💾 Guardar Registro</button>
+      </div>
+
+      <div class="card">
+        <div class="header-historial">
+          <h3>Jornada Actual</h3>
+          <button id="btn-exportar" class="btn-excel">📊 Excel (.csv)</button>
+        </div>
+        
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Concepto</th>
+                <th>Tercero</th>
+                <th>Monto</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tabla-movimientos">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <button id="btn-toggle-chart" class="btn-toggle-chart">📊 Mostrar / Ocultar Análisis Gráfico</button>
+
+      <div id="chart-card" class="card" style="margin-top: 12px; display: block;">
+        <h3>Análisis Financiero (Barras)</h3>
+        <div class="chart-container">
+          <canvas id="financialChart"></canvas>
+        </div>
+      </div>
+
+      <button id="btn-logout" class="btn-danger">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, onSnapshot, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_dbxRVqk7dv6B86RWMSQFsgIdKxGWgWo",
+      authDomain: "cuadre-65ea8.firebaseapp.com",
+      projectId: "cuadre-65ea8",
+      storageBucket: "cuadre-65ea8.firebasestorage.app",
+      messagingSenderId: "52756582886",
+      appId: "1:52756582886:web:5584b611310d47087ac627",
+      measurementId: "G-EHP6LK6L62"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let listaMovimientos = [];
+    let myBarChart = null;
+
+    let globalIngresos = 0;
+    let globalGastos = 0;
+    let currentDiaId = new Date().toISOString().slice(0, 10); // ID del día actual: YYYY-MM-DD
+
+    const authSection = document.getElementById('auth-section');
+    const appSection = document.getElementById('app-section');
+
+    document.getElementById('btn-register').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        alert("¡Cuenta de Cuadre creada exitosamente!");
+      } catch (e) {
+        alert("Error de registro: " + e.message);
+      }
+    });
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        alert("Error al iniciar sesión: " + e.message);
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+
+    document.getElementById('btn-toggle-chart').addEventListener('click', () => {
+      const chartCard = document.getElementById('chart-card');
+      chartCard.style.display = chartCard.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // LÓGICA DE CIERRE DE CAJA
+    document.getElementById('btn-cierre-caja').addEventListener('click', () => {
+      const cierreCard = document.getElementById('cierre-card');
+      const rentabilidadVal = document.getElementById('cierre-rentabilidad');
+      const diagnosticoText = document.getElementById('cierre-diagnostico');
+
+      if (globalIngresos === 0) {
+        rentabilidadVal.textContent = "0%";
+        diagnosticoText.textContent = "Sin ventas registradas en la jornada para calcular porcentaje de utilidad.";
+        cierreCard.style.display = 'block';
+        return;
+      }
+
+      const utilidadNeta = globalIngresos - globalGastos;
+      const porcentajeRentabilidad = ((utilidadNeta / globalIngresos) * 100).toFixed(1);
+
+      rentabilidadVal.textContent = `${porcentajeRentabilidad}%`;
+
+      if (porcentajeRentabilidad >= 30) {
+        diagnosticoText.innerHTML = `¡Excelente rentabilidad! Tu negocio retiene el <strong>${porcentajeRentabilidad}%</strong> de las ventas del día como utilidad libre. Estructura súper eficiente.`;
+      } else if (porcentajeRentabilidad > 0) {
+        diagnosticoText.innerHTML = `Cierre positivo con un <strong>${porcentajeRentabilidad}%</strong> de margen neto. Controla pequeños gastos para elevar la utilidad.`;
+      } else {
+        diagnosticoText.innerHTML = `⚠️ Cierre deficitario (<strong>${porcentajeRentabilidad}%</strong>). Los egresos han consumido tus ventas registradas hoy.`;
+      }
+
+      cierreCard.style.display = 'block';
+    });
+
+    // LÓGICA DE CERRAR DÍA E INICIAR NUEVO (GUARDA HISTORIAL)
+    document.getElementById('btn-nuevo-dia').addEventListener('click', () => {
+      if (confirm("¿Confirmas el cierre del día de hoy? Se archivará la jornada e iniciarás con la pantalla en blanco para mañana.")) {
+        // Generar nuevo ID para el día siguiente o refrescar vista
+        currentDiaId = 'dia_' + Date.now();
+        document.getElementById('cierre-card').style.display = 'none';
+        alert("¡Jornada guardada con éxito en el historial! Listo para registrar los movimientos del nuevo día.");
+        cargarMovimientos();
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        authSection.style.display = 'none';
+        appSection.style.display = 'block';
+        cargarMovimientos();
+      } else {
+        currentUser = null;
+        authSection.style.display = 'block';
+        appSection.style.display = 'none';
+      }
+    });
+
+    document.getElementById('btn-guardar').addEventListener('click', async () => {
+      if (!currentUser) return;
+
+      const tipo = document.getElementById('tipo').value;
+      const concepto = document.getElementById('concepto').value.trim();
+      const monto = parseFloat(document.getElementById('monto').value);
+      const tercero = document.getElementById('tercero').value;
+
+      if (!concepto || isNaN(monto)) {
+        alert("Por favor ingresa un concepto y un monto válido.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "users", currentUser.uid, "movimientos"), {
+          tipo: tipo,
+          concepto: concepto,
+          monto: monto,
+          tercero: tercero,
+          diaId: currentDiaId,
+          fecha: serverTimestamp()
+        });
+
+        document.getElementById('concepto').value = '';
+        document.getElementById('monto').value = '';
+        document.getElementById('tercero').value = '';
+      } catch (e) {
+        alert("Error al guardar registro: " + e.message);
+      }
+    });
+
+    function cargarMovimientos() {
+      const q = query(
+        collection(db, "users", currentUser.uid, "movimientos"),
+        orderBy("fecha", "desc")
+      );
+
+      onSnapshot(q, (snapshot) => {
+        const tbody = document.getElementById('tabla-movimientos');
+        tbody.innerHTML = '';
+        
+        let sumIngresos = 0;
+        let sumGastos = 0;
+        listaMovimientos = [];
+        
+        const conteoProductos = {};
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const docId = docSnap.id;
+          
+          // Conteo de producto más vendido
+          if (data.tipo === 'INGRESO' && data.concepto) {
+            const prodKey = data.concepto.toUpperCase();
+            conteoProductos[prodKey] = (conteoProductos[prodKey] || 0) + 1;
+          }
+
+          // Solo sumar al dashboard si pertenece al día activo
+          if (data.diaId === currentDiaId || !data.diaId) {
+            listaMovimientos.push(data);
+
+            const tr = document.createElement('tr');
+            const badgeClass = data.tipo === 'INGRESO' ? 'badge-ingreso' : 'badge-gasto';
+            
+            const valMonto = data.monto || 0;
+            if (data.tipo === 'INGRESO') {
+              sumIngresos += valMonto;
+            } else {
+              sumGastos += valMonto;
+            }
+
+            tr.innerHTML = `
+              <td class="${badgeClass}">${data.tipo}</td>
+              <td>${data.concepto}</td>
+              <td>${data.tercero || '-'}</td>
+              <td>$${valMonto.toLocaleString('es-CO')}</td>
+              <td><button class="btn-delete" title="Eliminar" data-id="${docId}">🗑️</button></td>
+            `;
+            tbody.appendChild(tr);
+          }
+        });
+
+        // Eliminar registros
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.target.getAttribute('data-id');
+            if (confirm("¿Seguro que deseas eliminar este registro contable?")) {
+              await deleteDoc(doc(db, "users", currentUser.uid, "movimientos", id));
+            }
+          });
+        });
+
+        // Calcular Producto Estrella
+        let topProd = "-";
+        let maxCount = 0;
+        for (const [prod, count] of Object.entries(conteoProductos)) {
+          if (count > maxCount) {
+            maxCount = count;
+            topProd = prod;
+          }
+        }
+
+        const topBox = document.getElementById('top-product-box');
+        if (maxCount > 0) {
+          document.getElementById('top-product-name').textContent = topProd;
+          document.getElementById('top-product-count').textContent = `${maxCount} venta(s) registrada(s)`;
+          topBox.style.display = 'block';
+        } else {
+          topBox.style.display = 'none';
+        }
+
+        globalIngresos = sumIngresos;
+        globalGastos = sumGastos;
+
+        document.getElementById('total-ingresos').textContent = `$${sumIngresos.toLocaleString('es-CO')}`;
+        document.getElementById('total-gastos').textContent = `$${sumGastos.toLocaleString('es-CO')}`;
+        const saldo = sumIngresos - sumGastos;
+        document.getElementById('saldo-neto').textContent = `$${saldo.toLocaleString('es-CO')}`;
+
+        evaluarSaludFinanciera(sumIngresos, sumGastos, saldo);
+        actualizarGraficoBarras(sumIngresos, sumGastos);
+
+      }, (error) => {
+        console.error("Error leyendo Firestore: ", error);
+      });
+    }
+
+    function evaluarSaludFinanciera(ingresos, gastos, saldo) {
+      const healthBadge = document.getElementById('health-status');
+      
+      if (ingresos === 0 && gastos === 0) {
+        healthBadge.className = "health-badge health-warning";
+        healthBadge.textContent = "🟡 Sin transacciones en esta jornada aún.";
+        return;
+      }
+
+      if (saldo > 0 && (gastos === 0 || ingresos / gastos >= 1.25)) {
+        healthBadge.className = "health-badge health-good";
+        healthBadge.textContent = "🟢 Caja Saludable: Excelente margen de liquidez.";
+      } else if (saldo >= 0) {
+        healthBadge.className = "health-badge health-warning";
+        healthBadge.textContent = "🟡 En Punto de Equilibrio: Monitorea tus gastos operacionales.";
+      } else {
+        healthBadge.className = "health-badge health-bad";
+        healthBadge.textContent = "🔴 Alerta de Insolvencia: Los gastos superan los ingresos.";
+      }
+    }
+
+    function actualizarGraficoBarras(ingresos, gastos) {
+      const ctx = document.getElementById('financialChart').getContext('2d');
+      
+      if (myBarChart) {
+        myBarChart.destroy();
+      }
+
+      myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Ingresos Hoy', 'Gastos Hoy'],
+          datasets: [{
+            label: 'Total ($ COP)',
+            data: [ingresos, gastos],
+            backgroundColor: ['#007a53', '#dc3545'],
+            borderRadius: 8,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString('es-CO');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById('btn-exportar').addEventListener('click', () => {
+      if (listaMovimientos.length === 0) {
+        alert("No hay movimientos contables para exportar.");
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "Tipo,Concepto,Tercero,Monto (COP)\n";
+
+      listaMovimientos.forEach(row => {
+        const concepto = `"${(row.concepto || '').replace(/"/g, '""')}"`;
+        const tercero = `"${(row.tercero || '-').replace(/"/g, '""')}"`;
+        csvContent += `${row.tipo},${concepto},${tercero},${row.monto}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Cuadre_SAS_Reporte_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+</body>
+</html>
